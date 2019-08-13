@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
-DATA_DIR=${1:-/workspace/bert/data}
+DATA_DIR=${1:-/home/ubuntu/DeepLearningExamples/PyTorch/LanguageModeling/BERT/data}
 
-# Download vocab files from pretrained model
-cd vocab && python3 download_models.py && rm *.zip && rm ./*/*.ckpt.*
-
-# Download SQUAD
-cd $DATA_DIR/squad && . squad_download.sh
-
-# Download SWAG
-git clone https://github.com/rowanz/swagaf.git $DATA_DIR/swag
-
-# Download GLUE
-cd $DATA_DIR/glue && . download_mrpc.sh
+## Download vocab files from pretrained model
+#cd vocab && python3 download_models.py && rm *.zip && rm ./*/*.ckpt.*
+#
+## Download SQUAD
+#cd $DATA_DIR/squad && . squad_download.sh
+#
+## Download SWAG
+#git clone https://github.com/rowanz/swagaf.git $DATA_DIR/swag
+#
+## Download GLUE
+#cd $DATA_DIR/glue && . download_mrpc.sh
 
 # WIKI Download
 cd $DATA_DIR/wikipedia_corpus && . download_wikipedia.sh
