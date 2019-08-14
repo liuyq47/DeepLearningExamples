@@ -1,6 +1,10 @@
 #! /bin/bash
 
-WIKI_DUMP="https://dumps.wikimedia.org/enwiki/20190320/enwiki-20190320-pages-articles-multistream.xml.bz2"
+# working link: https://dumps.wikimedia.org/rowiki/20190320/rowiki-20190320-pages-articles-multistream.xml.bz2
+
+#WIKI_DUMP="https://dumps.wikimedia.org/enwiki/20190320/enwiki-20190320-pages-articles-multistream.xml.bz2"
+WIKI_DUMP="https://dumps.wikimedia.org/rowiki/20190320/rowiki-20190320-pages-articles-multistream.xml.bz2"
+
 N_PROCS_PREPROCESS=$(nproc)    # Adjust this based on memory requirements and available number of cores
 
 # Download Wikipedia dump file

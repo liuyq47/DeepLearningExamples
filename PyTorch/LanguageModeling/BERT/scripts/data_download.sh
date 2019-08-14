@@ -15,18 +15,18 @@ DATA_DIR=${1:-/home/ubuntu/DeepLearningExamples/PyTorch/LanguageModeling/BERT/da
 
 # WIKI Download
 cd $DATA_DIR/wikipedia_corpus && . download_wikipedia.sh
-
-# Bookcorpus  Download
-cd $DATA_DIR/bookcorpus && . download_bookcorpus.sh
+#
+## Bookcorpus  Download
+#cd $DATA_DIR/bookcorpus && . download_bookcorpus.sh
 
 cd $DATA_DIR
 # Create HDF5 files for WIKI
 bash create_datasets_from_start.sh wikipedia_corpus ./wikipedia_corpus/wikipedia_corpus.txt \
   && rm -r ./wikipedia_corpus/final_* \
 
-# Create HDF5 files for Bookcorpus
-bash create_datasets_from_start.sh bookcorpus ./bookcorpus/bookcorpus.txt \
-  && rm -r ./bookcorpus/final_* \
+## Create HDF5 files for Bookcorpus
+#bash create_datasets_from_start.sh bookcorpus ./bookcorpus/bookcorpus.txt \
+#  && rm -r ./bookcorpus/final_* \
 
-# Create HDF5 files for inter sequence-pair mixed Wikipedia and Bookcorpus
-bash merge_datasets_after_creation.sh merged_wiki+books wikipedia_corpus/hdf5_shards,bookcorpus/hdf5_shards 1024
+## Create HDF5 files for inter sequence-pair mixed Wikipedia and Bookcorpus
+#bash merge_datasets_after_creation.sh merged_wiki+books wikipedia_corpus/hdf5_shards,bookcorpus/hdf5_shards 1024
