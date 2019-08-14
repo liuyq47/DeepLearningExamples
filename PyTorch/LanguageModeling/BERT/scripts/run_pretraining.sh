@@ -20,8 +20,8 @@ DATASET=wikipedia_corpus # change this for other datasets
 
 DATA_DIR=data/${DATASET}/hdf5_shards/
 BERT_CONFIG=bert_config.json
-RESULTS_DIR=/results
-CHECKPOINTS_DIR=/results/checkpoints
+RESULTS_DIR=./results
+CHECKPOINTS_DIR=./results/checkpoints
 
 mkdir -p $CHECKPOINTS_DIR
 
@@ -65,7 +65,7 @@ fi
 
 echo $DATA_DIR
 INPUT_DIR=$DATA_DIR
-CMD=" /workspace/bert/run_pretraining.py"
+CMD=" /home/ubuntu/DeepLearningExamples/PyTorch/LanguageModeling/BERT/run_pretraining.py"
 CMD+=" --input_dir=$DATA_DIR"
 CMD+=" --output_dir=$CHECKPOINTS_DIR"
 CMD+=" --config_file=$BERT_CONFIG"
