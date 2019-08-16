@@ -9,7 +9,7 @@ class BooksDownloader:
 
 
     def download(self):
-        bookscorpus_download_command = 'python3 /workspace/bookcorpus/download_files.py --list /workspace/bookcorpus/url_list.jsonl --out'
+        bookscorpus_download_command = 'python3 /home/ubuntu/bookcorpus/download_files.py --list /home/ubuntu/bookcorpus/url_list.jsonl --out'
         bookscorpus_download_command += ' ' + self.save_path + '/bookscorpus'
         bookscorpus_download_command += ' --trash-bad-count'
         bookscorpus_download_process = subprocess.run(bookscorpus_download_command, shell=True, check=True)
