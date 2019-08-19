@@ -14,7 +14,7 @@ import subprocess
 
 
 def main(args):
-    working_dir = '/home/ubuntu/DeepLearningExamples/PyTorch/LanguageModeling/BERT/data/' #os.environ['BERT_PREP_WORKING_DIR']
+    working_dir = '/home/ubuntu/DeepLearningExamples/PyTorch/LanguageModeling/BERT/data' #os.environ['BERT_PREP_WORKING_DIR']
 
     print('Working Directory:', working_dir)
     print('Action:', args.action)
@@ -164,17 +164,20 @@ def main(args):
     elif args.action == 'create_hdf5_files':
         last_process = None
 
+        if not os.path.exists(directory_structure['hdf5']):
+            os.makedirs(directory_structure['hdf5'])
+
         def create_record_worker(filename_prefix, shard_id, output_format='hdf5'):
             bert_preprocessing_command = 'python /home/ubuntu/DeepLearningExamples/PyTorch/LanguageModeling/BERT/create_pretraining_data.py'
             bert_preprocessing_command += ' --input_file=' + directory_structure['sharded'] + '/' + args.dataset + '/' + filename_prefix + '_' + str(shard_id) + '.txt'
-            bert_preprocessing_command += ' --output_file=' + directory_structure['tfrecord'] + '/' + args.dataset + '/' + filename_prefix + '_' + str(shard_id) + '.' + output_format
+            bert_preprocessing_command += ' --output_file=' + directory_structure['hdf5'] + '/' + args.dataset + '/' + filename_prefix + '_' + str(shard_id) + '.' + output_format
             bert_preprocessing_command += ' --vocab_file=' + args.vocab_file
             bert_preprocessing_command += ' --do_lower_case' if args.do_lower_case else ''
-            bert_preprocessing_command += ' --max_seq_length=' + args.max_seq_length
-            bert_preprocessing_command += ' --max_predictions_per_seq=' + args.max_predictions_per_seq
-            bert_preprocessing_command += ' --masked_lm_prob=' + args.masked_lm_prob
-            bert_preprocessing_command += ' --random_seed=' + args.random_seed
-            bert_preprocessing_command += ' --dupe_factor=' + args.dupe_factor
+            bert_preprocessing_command += ' --max_seq_length=' + str(args.max_seq_length)
+            bert_preprocessing_command += ' --max_predictions_per_seq=' + str(args.max_predictions_per_seq)
+            bert_preprocessing_command += ' --masked_lm_prob=' + str(args.masked_lm_prob)
+            bert_preprocessing_command += ' --random_seed=' + str(args.random_seed)
+            bert_preprocessing_command += ' --dupe_factor=' + str(args.dupe_factor)
             bert_preprocessing_process = subprocess.Popen(bert_preprocessing_command, shell=True)
             bert_preprocessing_process.communicate()
 
@@ -183,6 +186,9 @@ def main(args):
             # This could be better optimized (fine if all take equal time)
             if shard_id % args.n_processes == 0 and shard_id > 0:
                 bert_preprocessing_process.wait()
+
+        if args.output_file_prefix is None:
+            args.output_file_prefix = args.dataset
 
         for i in range(args.n_training_shards):
             create_record_worker(args.output_file_prefix + '_training', i)
