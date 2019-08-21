@@ -193,12 +193,12 @@ def main(args):
         for i in range(args.n_training_shards):
             create_record_worker(args.output_file_prefix + '_training', i)
 
-        last_process.wait()
+        #last_process.wait()
 
         for i in range(args.n_test_shards):
             create_record_worker(args.output_file_prefix + '_test', i)
 
-        last_process.wait()
+        #last_process.wait()
 
 
 if __name__ == "__main__":
