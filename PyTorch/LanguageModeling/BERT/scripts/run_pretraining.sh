@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Container nvidia build = " $NVIDIA_BUILD_ID
+#echo "Container nvidia build = " $NVIDIA_BUILD_ID
 train_batch_size=${1:-8192}
 learning_rate=${2:-"6e-3"}
 precision=${3:-"fp16"}
@@ -16,7 +16,7 @@ seed=${12:-$RANDOM}
 job_name=${13:-"bert_lamb_pretraining"}
 allreduce_post_accumulation=${14:-"true"}
 allreduce_post_accumulation_fp16=${15:-"true"}
-accumulate_into_fp16=${16:-"true"}
+accumulate_into_fp16=${16:-"false"}
 
 train_batch_size_phase2=${1:-4096}
 learning_rate_phase2=${2:-"4e-3"}
@@ -26,8 +26,7 @@ gradient_accumulation_steps_phase2=${11:-512}
 
 DATASET=books_wiki_en_corpus # change this for other datasets
 
-DATA_DIR=data/${DATASET}/training/
-#DATA_DIR=data/hdf5/wiki+book/bert_pytorch_wikipedia_bookcorpus_interseqmix_seq_128_pred_20/
+DATA_DIR=/home/ubuntu/DeepLearningExamples/PyTorch/LanguageModeling/BERT/data/phase1/
 BERT_CONFIG=bert_config.json
 RESULTS_DIR=./results
 CHECKPOINTS_DIR=./results/checkpoints
@@ -120,7 +119,7 @@ fi
 
 if [ "$create_logfile" = "true" ] ; then
   export GBS=$(expr $train_batch_size \* $num_gpus)
-  printf -v TAG "pyt_bert_pretraining_%s_gbs%d" "$precision" $GBS
+  printf -v TAG "pyt_bert_pretraining_phase1_%s_gbs%d" "$precision" $GBS
   DATESTAMP=`date +'%y%m%d%H%M%S'`
   LOGFILE=$RESULTS_DIR/$job_name.$TAG.$DATESTAMP.log
   printf "Logs written to %s\n" "$LOGFILE"
@@ -154,9 +153,9 @@ echo "final loss: $final_loss"
 
 #Start Phase2
 
-DATASET=merged_wiki+books_phase2 # change this for other datasets
+DATASET=books_wiki_en_corpus # change this for other datasets
 
-DATA_DIR=data/${DATASET}/hdf5_shards/
+DATA_DIR=/home/ubuntu/DeepLearningExamples/PyTorch/LanguageModeling/BERT/data/phase2/
 #DATA_DIR=data/hdf5/wiki+book/bert_pytorch_wikipedia_bookcorpus_interseqmix_seq_512_pred_80/
 
 PREC=""
@@ -191,7 +190,7 @@ fi
 
 echo $DATA_DIR
 INPUT_DIR=$DATA_DIR
-CMD=" /workspace/bert/run_pretraining.py"
+CMD=" /home/ubuntu/DeepLearningExamples/PyTorch/LanguageModeling/BERT/run_pretraining.py"
 CMD+=" --input_dir=$DATA_DIR"
 CMD+=" --output_dir=$CHECKPOINTS_DIR"
 CMD+=" --config_file=$BERT_CONFIG"
@@ -210,7 +209,7 @@ CMD+=" $CHECKPOINT"
 CMD+=" $ALL_REDUCE_POST_ACCUMULATION"
 CMD+=" $ALL_REDUCE_POST_ACCUMULATION_FP16"
 CMD+=" $ACCUMULATE_INTO_FP16"
-CMD+=" --do_train --phase2 --resume_from_checkpoint --phase1_end_step=$train_steps"
+CMD+=" --do_train --phase2 --phase1_end_step=$train_steps"
 
 if [ "$num_gpus" -gt 1  ] ; then
    CMD="python3 -m torch.distributed.launch --nproc_per_node=$num_gpus $CMD"
@@ -220,8 +219,8 @@ fi
 
 
 if [ "$create_logfile" = "true" ] ; then
-  export GBS=$(expr $train_batch_size \* $num_gpus)
-  printf -v TAG "pyt_bert_pretraining_%s_gbs%d" "$precision" $GBS
+  export GBS=$(expr $train_batch_size_phase2 \* $num_gpus)
+  printf -v TAG "pyt_bert_pretraining_phase2_%s_gbs%d" "$precision" $GBS
   DATESTAMP=`date +'%y%m%d%H%M%S'`
   LOGFILE=$RESULTS_DIR/$job_name.$TAG.$DATESTAMP.log
   printf "Logs written to %s\n" "$LOGFILE"
