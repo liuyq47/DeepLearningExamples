@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Specify dist training params
-NUM_NODES=32
+NUM_NODES=64
 NODE_RANK=$1
 MASTER_ADDR="172.31.15.71"
 MASTER_PORT="1234"
 
 # Specify phase 1 params
-train_batch_size=256
+train_batch_size=128
 learning_rate="6e-3"
 precision="fp16"
 num_gpus=8
@@ -17,7 +17,7 @@ save_checkpoint_steps=200
 resume_training="false"
 create_logfile="true"
 accumulate_gradients="true"
-gradient_accumulation_steps=4
+gradient_accumulation_steps=2
 seed=$RANDOM
 job_name="bert_lamb_pretraining"
 allreduce_post_accumulation="true"
@@ -26,11 +26,11 @@ accumulate_into_fp16="false"
 
 
 # Specify phase 2 params
-train_batch_size_phase2=128
+train_batch_size_phase2=64
 learning_rate_phase2="4e-3"
 warmup_proportion_phase2="0.128"
 train_steps_phase2=1563
-gradient_accumulation_steps_phase2=16
+gradient_accumulation_steps_phase2=8
 
 # Specify phase 1 data path
 #DATA_DIR=/home/ubuntu/DeepLearningExamples/PyTorch/LanguageModeling/BERT/data/phase1/
