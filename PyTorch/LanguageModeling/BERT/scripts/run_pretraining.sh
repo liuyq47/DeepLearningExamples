@@ -7,7 +7,7 @@ precision=${3:-"fp16"}
 num_gpus=${4:-8}
 warmup_proportion=${5:-"0.2843"}
 train_steps=${6:-7038}
-save_checkpoint_steps=${7:-200}
+save_checkpoint_steps=${7:-8000}
 resume_training=${8:-"false"}
 create_logfile=${9:-"true"}
 accumulate_gradients=${10:-"true"}
@@ -26,7 +26,7 @@ gradient_accumulation_steps_phase2=${11:-512}
 
 DATASET=books_wiki_en_corpus # change this for other datasets
 
-DATA_DIR=/home/ubuntu/DeepLearningExamples/PyTorch/LanguageModeling/BERT/data/phase1/
+DATA_DIR=/home/ec2-user/pt-bert/DeepLearningExamples/PyTorch/LanguageModeling/BERT/data/phase1/
 BERT_CONFIG=bert_config.json
 RESULTS_DIR=./results
 CHECKPOINTS_DIR=./results/checkpoints
@@ -89,7 +89,7 @@ fi
 
 echo $DATA_DIR
 INPUT_DIR=$DATA_DIR
-CMD=" /home/ubuntu/DeepLearningExamples/PyTorch/LanguageModeling/BERT/run_pretraining.py"
+CMD=" /home/ec2-user/pt-bert/DeepLearningExamples/PyTorch/LanguageModeling/BERT/run_pretraining.py"
 CMD+=" --input_dir=$DATA_DIR"
 CMD+=" --output_dir=$CHECKPOINTS_DIR"
 CMD+=" --config_file=$BERT_CONFIG"
@@ -150,99 +150,99 @@ train_perf=$(awk 'BEGIN {print ('$throughput' * '$num_gpus' * '$train_batch_size
 echo " training throughput phase1: $train_perf sequences/second"
 echo "average loss: $loss"
 echo "final loss: $final_loss"
-
-#Start Phase2
-
-DATASET=books_wiki_en_corpus # change this for other datasets
-
-DATA_DIR=/home/ubuntu/DeepLearningExamples/PyTorch/LanguageModeling/BERT/data/phase2/
-#DATA_DIR=data/hdf5/wiki+book/bert_pytorch_wikipedia_bookcorpus_interseqmix_seq_512_pred_80/
-
-PREC=""
-if [ "$precision" = "fp16" ] ; then
-   PREC="--fp16"
-elif [ "$precision" = "fp32" ] ; then
-   PREC=""
-else
-   echo "Unknown <precision> argument"
-   exit -2
-fi
-
-ACCUMULATE_GRADIENTS=""
-if [ "$accumulate_gradients" == "true" ] ; then
-   ACCUMULATE_GRADIENTS="--gradient_accumulation_steps=$gradient_accumulation_steps_phase2"
-fi
-
-ALL_REDUCE_POST_ACCUMULATION=""
-if [ "$allreduce_post_accumulation" == "true" ] ; then
-   ALL_REDUCE_POST_ACCUMULATION="--allreduce_post_accumulation"
-fi
-
-ALL_REDUCE_POST_ACCUMULATION_FP16=""
-if [ "$allreduce_post_accumulation_fp16" == "true" ] ; then
-   ALL_REDUCE_POST_ACCUMULATION_FP16="--allreduce_post_accumulation_fp16"
-fi
-
-ACCUMULATE_INTO_FP16=""
-if [ "$accumulate_into_fp16" == "true" ] ; then
-   ACCUMULATE_INTO_FP16="--accumulate_into_fp16"
-fi
-
-echo $DATA_DIR
-INPUT_DIR=$DATA_DIR
-CMD=" /home/ubuntu/DeepLearningExamples/PyTorch/LanguageModeling/BERT/run_pretraining.py"
-CMD+=" --input_dir=$DATA_DIR"
-CMD+=" --output_dir=$CHECKPOINTS_DIR"
-CMD+=" --config_file=$BERT_CONFIG"
-CMD+=" --bert_model=bert-large-uncased"
-CMD+=" --train_batch_size=$train_batch_size_phase2"
-CMD+=" --max_seq_length=512"
-CMD+=" --max_predictions_per_seq=80"
-CMD+=" --max_steps=$train_steps_phase2"
-CMD+=" --warmup_proportion=$warmup_proportion_phase2"
-CMD+=" --num_steps_per_checkpoint=$save_checkpoint_steps"
-CMD+=" --learning_rate=$learning_rate_phase2"
-CMD+=" --seed=$seed"
-CMD+=" $PREC"
-CMD+=" $ACCUMULATE_GRADIENTS"
-CMD+=" $CHECKPOINT"
-CMD+=" $ALL_REDUCE_POST_ACCUMULATION"
-CMD+=" $ALL_REDUCE_POST_ACCUMULATION_FP16"
-CMD+=" $ACCUMULATE_INTO_FP16"
-CMD+=" --do_train --phase2 --phase1_end_step=$train_steps"
-
-if [ "$num_gpus" -gt 1  ] ; then
-   CMD="python3 -m torch.distributed.launch --nproc_per_node=$num_gpus $CMD"
-else
-   CMD="python3  $CMD"
-fi
-
-
-if [ "$create_logfile" = "true" ] ; then
-  export GBS=$(expr $train_batch_size_phase2 \* $num_gpus)
-  printf -v TAG "pyt_bert_pretraining_phase2_%s_gbs%d" "$precision" $GBS
-  DATESTAMP=`date +'%y%m%d%H%M%S'`
-  LOGFILE=$RESULTS_DIR/$job_name.$TAG.$DATESTAMP.log
-  printf "Logs written to %s\n" "$LOGFILE"
-fi
-
-set -x
-if [ -z "$LOGFILE" ] ; then
-   $CMD
-else
-   (
-     $CMD
-   ) |& tee $LOGFILE
-fi
-
-set +x
-
-echo "finished phase2"
-throughput=`cat $LOGFILE | grep Iteration | tail -1 | awk -F'it/s' '{print $1}' | awk -F',' '{print $2}' | egrep -o [0-9.]+`
-loss=`cat $LOGFILE | grep 'Average Loss' | tail -1 | awk -F'Average Loss =' '{print $2}' | awk -F' ' '{print $1}' | egrep -o [0-9.]+`
-final_loss=`cat $LOGFILE | grep 'Total Steps' | tail -1 | awk -F'Final Loss =' '{print $2}' | awk -F' ' '{print $1}' | egrep -o [0-9.]+`
-
-train_perf=$(awk 'BEGIN {print ('$throughput' * '$num_gpus' * '$train_batch_size_phase2')}')
-echo " training throughput phase2: $train_perf sequences/second"
-echo "average loss: $loss"
-echo "final loss: $final_loss"
+#
+##Start Phase2
+#
+#DATASET=books_wiki_en_corpus # change this for other datasets
+#
+#DATA_DIR=/home/ubuntu/DeepLearningExamples/PyTorch/LanguageModeling/BERT/data/phase2/
+##DATA_DIR=data/hdf5/wiki+book/bert_pytorch_wikipedia_bookcorpus_interseqmix_seq_512_pred_80/
+#
+#PREC=""
+#if [ "$precision" = "fp16" ] ; then
+#   PREC="--fp16"
+#elif [ "$precision" = "fp32" ] ; then
+#   PREC=""
+#else
+#   echo "Unknown <precision> argument"
+#   exit -2
+#fi
+#
+#ACCUMULATE_GRADIENTS=""
+#if [ "$accumulate_gradients" == "true" ] ; then
+#   ACCUMULATE_GRADIENTS="--gradient_accumulation_steps=$gradient_accumulation_steps_phase2"
+#fi
+#
+#ALL_REDUCE_POST_ACCUMULATION=""
+#if [ "$allreduce_post_accumulation" == "true" ] ; then
+#   ALL_REDUCE_POST_ACCUMULATION="--allreduce_post_accumulation"
+#fi
+#
+#ALL_REDUCE_POST_ACCUMULATION_FP16=""
+#if [ "$allreduce_post_accumulation_fp16" == "true" ] ; then
+#   ALL_REDUCE_POST_ACCUMULATION_FP16="--allreduce_post_accumulation_fp16"
+#fi
+#
+#ACCUMULATE_INTO_FP16=""
+#if [ "$accumulate_into_fp16" == "true" ] ; then
+#   ACCUMULATE_INTO_FP16="--accumulate_into_fp16"
+#fi
+#
+#echo $DATA_DIR
+#INPUT_DIR=$DATA_DIR
+#CMD=" /home/ubuntu/DeepLearningExamples/PyTorch/LanguageModeling/BERT/run_pretraining.py"
+#CMD+=" --input_dir=$DATA_DIR"
+#CMD+=" --output_dir=$CHECKPOINTS_DIR"
+#CMD+=" --config_file=$BERT_CONFIG"
+#CMD+=" --bert_model=bert-large-uncased"
+#CMD+=" --train_batch_size=$train_batch_size_phase2"
+#CMD+=" --max_seq_length=512"
+#CMD+=" --max_predictions_per_seq=80"
+#CMD+=" --max_steps=$train_steps_phase2"
+#CMD+=" --warmup_proportion=$warmup_proportion_phase2"
+#CMD+=" --num_steps_per_checkpoint=$save_checkpoint_steps"
+#CMD+=" --learning_rate=$learning_rate_phase2"
+#CMD+=" --seed=$seed"
+#CMD+=" $PREC"
+#CMD+=" $ACCUMULATE_GRADIENTS"
+#CMD+=" $CHECKPOINT"
+#CMD+=" $ALL_REDUCE_POST_ACCUMULATION"
+#CMD+=" $ALL_REDUCE_POST_ACCUMULATION_FP16"
+#CMD+=" $ACCUMULATE_INTO_FP16"
+#CMD+=" --do_train --phase2 --phase1_end_step=$train_steps"
+#
+#if [ "$num_gpus" -gt 1  ] ; then
+#   CMD="python3 -m torch.distributed.launch --nproc_per_node=$num_gpus $CMD"
+#else
+#   CMD="python3  $CMD"
+#fi
+#
+#
+#if [ "$create_logfile" = "true" ] ; then
+#  export GBS=$(expr $train_batch_size_phase2 \* $num_gpus)
+#  printf -v TAG "pyt_bert_pretraining_phase2_%s_gbs%d" "$precision" $GBS
+#  DATESTAMP=`date +'%y%m%d%H%M%S'`
+#  LOGFILE=$RESULTS_DIR/$job_name.$TAG.$DATESTAMP.log
+#  printf "Logs written to %s\n" "$LOGFILE"
+#fi
+#
+#set -x
+#if [ -z "$LOGFILE" ] ; then
+#   $CMD
+#else
+#   (
+#     $CMD
+#   ) |& tee $LOGFILE
+#fi
+#
+#set +x
+#
+#echo "finished phase2"
+#throughput=`cat $LOGFILE | grep Iteration | tail -1 | awk -F'it/s' '{print $1}' | awk -F',' '{print $2}' | egrep -o [0-9.]+`
+#loss=`cat $LOGFILE | grep 'Average Loss' | tail -1 | awk -F'Average Loss =' '{print $2}' | awk -F' ' '{print $1}' | egrep -o [0-9.]+`
+#final_loss=`cat $LOGFILE | grep 'Total Steps' | tail -1 | awk -F'Final Loss =' '{print $2}' | awk -F' ' '{print $1}' | egrep -o [0-9.]+`
+#
+#train_perf=$(awk 'BEGIN {print ('$throughput' * '$num_gpus' * '$train_batch_size_phase2')}')
+#echo " training throughput phase2: $train_perf sequences/second"
+#echo "average loss: $loss"
+#echo "final loss: $final_loss"
