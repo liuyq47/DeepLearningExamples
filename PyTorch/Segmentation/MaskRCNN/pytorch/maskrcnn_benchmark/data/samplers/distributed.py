@@ -5,7 +5,7 @@ import math
 import torch
 import torch.distributed as dist
 from torch.utils.data.sampler import Sampler
-
+import herring.torch as herring
 
 class DistributedSampler(Sampler):
     """Sampler that restricts data loading to a subset of the dataset.
@@ -26,11 +26,11 @@ class DistributedSampler(Sampler):
         if num_replicas is None:
             if not dist.is_available():
                 raise RuntimeError("Requires distributed package to be available")
-            num_replicas = dist.get_world_size()
+            num_replicas = herring.get_world_size()
         if rank is None:
             if not dist.is_available():
                 raise RuntimeError("Requires distributed package to be available")
-            rank = dist.get_rank()
+            rank = herring.get_rank()
         self.dataset = dataset
         self.num_replicas = num_replicas
         self.rank = rank

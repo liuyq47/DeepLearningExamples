@@ -4,8 +4,9 @@ import copy
 import logging
 
 import torch.utils.data
-from maskrcnn_benchmark.utils.comm import get_world_size
+#from maskrcnn_benchmark.utils.comm import get_world_size
 from maskrcnn_benchmark.utils.imports import import_file
+from herring.torch import get_world_size
 
 from . import datasets as D
 from . import samplers
@@ -110,6 +111,7 @@ def make_data_loader(cfg, is_train=True, is_distributed=False, start_iter=0):
     num_gpus = get_world_size()
     if is_train:
         images_per_batch = cfg.SOLVER.IMS_PER_BATCH
+        print("batch size ", cfg.SOLVER.IMS_PER_BATCH, "num_gpus, ", num_gpus, images_per_batch % num_gpus)
         assert (
             images_per_batch % num_gpus == 0
         ), "SOLVER.IMS_PER_BATCH ({}) must be divisible by the number "
@@ -154,6 +156,7 @@ def make_data_loader(cfg, is_train=True, is_distributed=False, start_iter=0):
 
     transforms = build_transforms(cfg, is_train)
     datasets, epoch_size = build_dataset(dataset_list, transforms, DatasetCatalog, is_train)
+    print("total_dataset_size: ", epoch_size)
 
     data_loaders = []
     for dataset in datasets:
