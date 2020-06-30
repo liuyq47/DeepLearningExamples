@@ -113,6 +113,7 @@ def train(cfg, local_rank, distributed, bucket_cap_mb):
         # else:
         model = DDP(model, device_ids=[herring.get_local_rank()], bucket_cap_mb=bucket_cap_mb)
         #model = DDP(model)
+    print("model parameter size: ", sum(p.numel() for p in model.parameters() if p.requires_grad))
     arguments = {}
     arguments["iteration"] = 0
 

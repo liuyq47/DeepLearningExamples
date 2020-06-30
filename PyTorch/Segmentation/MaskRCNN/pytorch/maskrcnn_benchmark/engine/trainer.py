@@ -14,7 +14,7 @@ from herring.torch import get_world_size
 
 try:
     from apex import amp
-    use_amp = True
+    use_amp = False
 except ImportError:
     print('Use APEX for multi-precision via apex.amp')
     use_amp = False
