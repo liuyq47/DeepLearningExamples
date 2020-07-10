@@ -68,7 +68,6 @@ def do_train(
     start_training_time = time.time()
     end = time.time()
     for iteration, (images, targets, _) in enumerate(data_loader, start_iter):
-        print("iter", iteration)
         data_time = time.time() - end
         iteration = iteration + 1
         arguments["iteration"] = iteration
@@ -77,7 +76,6 @@ def do_train(
         targets = [target.to(device) for target in targets]
 
         loss_dict = model(images, targets)
-        print("finish forward")
         losses = sum(loss for loss in loss_dict.values())
 
         # reduce losses over all GPUs for logging purposes
@@ -93,7 +91,6 @@ def do_train(
                 scaled_losses.backward()
         else:
             losses.backward()
-        print("finish backward")
         if not cfg.SOLVER.ACCUMULATE_GRAD:
             optimizer.step()
             scheduler.step()
@@ -106,7 +103,6 @@ def do_train(
                 optimizer.step()
                 scheduler.step()
                 optimizer.zero_grad()
-        print("finish update weigiht")
         batch_time = time.time() - end
         end = time.time()
         meters.update(time=batch_time, data=data_time)
