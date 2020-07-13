@@ -12,6 +12,15 @@ def get_argument_parser():
         help="pointer to the configuration file of the experiment",
         type=str,
         required=True)
+
+    parser.add_argument(
+        "--input_dir",
+        default=None,
+        type=str,
+        required=True,
+        help="The output directory where the model checkpoints will be written."
+    )
+
     parser.add_argument(
         "--output_dir",
         default=None,
@@ -48,6 +57,61 @@ def get_argument_parser():
         help=
         "Whether to lower case the input text. True for uncased models, False for cased models."
     )
+
+    parser.add_argument(
+        "--no_cuda",
+        default=False,
+        action='store_true',
+        help=
+        "Whether to lower case the input text. True for uncased models, False for cased models."
+    )
+
+    parser.add_argument(
+        "--gradient_accumulation_steps",
+        default=1,
+        type=int,
+        help=
+        "Whether to lower case the input text. True for uncased models, False for cased models."
+    )
+
+    parser.add_argument(
+        "--train_batch_size",
+        default=64,
+        type=int,
+        help=
+        "Whether to lower case the input text. True for uncased models, False for cased models."
+    )
+
+    parser.add_argument(
+        "--max_grad_norm",
+        default=1.0,
+        type=float,
+        help=
+        "Whether to lower case the input text. True for uncased models, False for cased models."
+    )
+    parser.add_argument(
+        "--loss_scasle",
+        default=0,
+        type=float,
+        help=
+        "Whether to lower case the input text. True for uncased models, False for cased models."
+    )
+
+    parser.add_argument(
+        "--delay_allreduce",
+        default=True,
+        action='store_true',
+        help=
+        "Whether to lower case the input text. True for uncased models, False for cased models."
+    )
+    parser.add_argument(
+        "--fp16",
+        default=False,
+        action='store_true',
+        help=
+        "Whether to lower case the input text. True for uncased models, False for cased models."
+    )
+
     parser.add_argument("--local_rank",
                         type=int,
                         default=-1,
