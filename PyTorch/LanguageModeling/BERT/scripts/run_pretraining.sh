@@ -26,7 +26,7 @@ gradient_accumulation_steps_phase2=${11:-512}
 
 DATASET=books_wiki_en_corpus # change this for other datasets
 
-DATA_DIR=/home/ec2-user/pt-bert/DeepLearningExamples/PyTorch/LanguageModeling/BERT/data/phase1/
+DATA_DIR=/home/ec2-user/pt-bert/bert-data/phase1/  #DeepLearningExamples/PyTorch/LanguageModeling/BERT/data/phase1/
 BERT_CONFIG=bert_config.json
 RESULTS_DIR=./results
 CHECKPOINTS_DIR=./results/checkpoints

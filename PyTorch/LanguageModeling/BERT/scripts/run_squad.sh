@@ -5,14 +5,16 @@
 
 #echo "Container nvidia build = " $NVIDIA_BUILD_ID
 
-init_checkpoint=${1:-"./results/checkpoints/ckpt_8601.pt"}
+init_checkpoint=${1:-"./results/checkpoints/ckpt_4301.pt"}
 epochs=${2:-"2.0"}
-batch_size=${3:-"3"}
+batch_size=${3:-"4"}
 learning_rate=${4:-"3e-5"}
 precision=${5:-"fp16"}
 num_gpu=${6:-"8"}
 seed=${7:-"1"}
+#squad_dir=${8:-"/fsx/DeepLearningExamples/PyTorch/LanguageModeling/BERT/data/download/squad/v1.1"}
 squad_dir=${8:-"./data/download/squad/v1.1"}
+#vocab_file=${9:-"/fsx/DeepLearningExamples/PyTorch/LanguageModeling/BERT/data/download/google_pretrained_weights/uncased_L-24_H-1024_A-16/vocab.txt"}
 vocab_file=${9:-"./data/download/google_pretrained_weights/uncased_L-24_H-1024_A-16/vocab.txt"}
 OUT_DIR=${10:-"./results/SQuAD"}
 mode=${11:-"train eval"}

@@ -14,7 +14,7 @@ import subprocess
 
 
 def main(args):
-    working_dir = '/home/ubuntu/DeepLearningExamples/PyTorch/LanguageModeling/BERT/data' #os.environ['BERT_PREP_WORKING_DIR']
+    working_dir = '/home/ec2-user/pt-bert/DeepLearningExamples/PyTorch/LanguageModeling/BERT/data' #os.environ['BERT_PREP_WORKING_DIR']
 
     print('Working Directory:', working_dir)
     print('Action:', args.action)

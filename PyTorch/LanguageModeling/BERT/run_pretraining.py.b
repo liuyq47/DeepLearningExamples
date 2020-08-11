@@ -351,7 +351,7 @@ def prepare_model_and_optimizer(args, device):
             model, optimizer = amp.initialize(model, optimizer, opt_level="O2", loss_scale=args.loss_scale)
                     #master_weights=False if args.accumulate_into_fp16 else True)
         if not args.phase2:
-            amp._amp_state.loss_scalers[0]._loss_scale = 2**13
+            amp._amp_state.loss_scalers[0]._loss_scale = 2**10
         else:
             amp._amp_state.loss_scalers[0]._loss_scale = 2**10
 
@@ -482,6 +482,7 @@ def main():
                          os.path.isfile(os.path.join(args.input_dir, f)) and 'training' in f]
                 files.sort()
                 num_files = len(files)
+                random.shuffle(files)
                 f_start_id = 0
             else:
                 f_start_id = checkpoint['files'][0]
@@ -489,22 +490,14 @@ def main():
                 args.resume_from_checkpoint = False
                 num_files = len(files)
 
+
             shared_file_list = {}
-            part_len = 1
-            
+
             if torch.distributed.is_initialized() and torch.distributed.get_world_size() > num_files:
-                random.shuffle(files)
                 remainder = torch.distributed.get_world_size() % num_files
                 data_file = files[(f_start_id*torch.distributed.get_world_size()+torch.distributed.get_rank() + remainder*f_start_id)%num_files]
             else:
-                part_index = torch.distributed.get_rank()
-                num_parts = torch.distributed.get_world_size()
-                part_len = num_files // num_parts
-                remaining = num_files % num_parts
-                part_start = part_len * part_index + min(part_index, remaining)
-                part_end = part_start + part_len + (part_index < remaining)
-                part_len = part_end - part_start
-                data_file = files[part_start]
+                data_file = files[(f_start_id*torch.distributed.get_world_size()+torch.distributed.get_rank())%num_files]
 
             previous_file = data_file
 
@@ -526,7 +519,7 @@ def main():
                 if torch.distributed.get_world_size() > num_files:
                     data_file = files[(f_id*torch.distributed.get_world_size()+torch.distributed.get_rank() + remainder*f_id)%num_files]
                 else:
-                    data_file = files[part_start+f_id%part_len]
+                    data_file = files[(f_id*torch.distributed.get_world_size()+torch.distributed.get_rank())%num_files]
 
                 logger.info("file no %s file %s" % (f_id, previous_file))
 

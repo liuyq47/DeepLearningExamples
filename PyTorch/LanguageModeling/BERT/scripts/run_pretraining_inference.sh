@@ -4,10 +4,11 @@ echo "Container nvidia build = " $NVIDIA_BUILD_ID
 
 DATASET=wikipedia_corpus # change this for other datasets
 
-DATA_DIR=data/${DATASET}/hdf5_shards/
-BERT_CONFIG=bert_config.json
-RESULTS_DIR=/results
-CHECKPOINTS_DIR=/results/checkpoints
+#DATA_DIR=/fsx/datasets/hdf5_lower_case_1_seq_len_512_max_pred_80_masked_lm_prob_0.15_random_seed_12345_dupe_factor_5_shard_1536_small/books_wiki_en_corpus_test/
+DATA_DIR=/fsx/datasets/hdf5_lower_case_1_seq_len_512_max_pred_80_masked_lm_prob_0.15_random_seed_12345_dupe_factor_5_shard_256/books_wiki_en_corpus_test/
+BERT_CONFIG=./bert_config.json
+RESULTS_DIR=./results
+CHECKPOINTS_DIR=./results/checkpoints
 
 
 if [ ! -d "$DATA_DIR" ] ; then
@@ -58,7 +59,7 @@ else
 fi
 
 echo $DATA_DIR
-CMD=" /workspace/bert/run_pretraining_inference.py"
+CMD=" /home/ec2-user/pt-bert/DeepLearningExamples/PyTorch/LanguageModeling/BERT/run_pretraining_inference.py"
 CMD+=" --input_dir=$DATA_DIR"
 CMD+=" --ckpt_dir=$CHECKPOINTS_DIR"
 CMD+=" --config_file=$BERT_CONFIG"
