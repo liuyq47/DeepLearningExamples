@@ -22,7 +22,6 @@ export LD_LIBRARY_PATH=/usr/local/cuda/extras/CUPTI/lib64:$LD_LIBRARY_PATH
 NUM_NODES=192
 NODE_RANK=$1
 MASTER_ADDR="172.31.35.122"
-#MASTER_ADDR="172.31.43.77"
 MASTER_PORT="1234"
 
 # Specify phase 1 params
@@ -46,12 +45,7 @@ allreduce_post_accumulation_fp16="true"
 accumulate_into_fp16="false"
 
 # Specify phase 1 data path
-#DATA_DIR=/fsx/datasets/hdf5_lower_case_1_seq_len_128_max_pred_20_masked_lm_prob_0.15_random_seed_12345_dupe_factor_5_shard_256/books_wiki_en_corpus_train
-#DATA_DIR=/home/ec2-user/bert_data/hdf5_lower_case_1_seq_len_128_max_pred_20_masked_lm_prob_0.15_random_seed_12345_dupe_factor_5_shard_1536_small/books_wiki_en_corpus_train
 DATA_DIR=/home/ec2-user/bert_data/hdf5_lower_case_1_seq_len_128_max_pred_20_masked_lm_prob_0.15_random_seed_12345_dupe_factor_10_shard_1536_small/books_wiki_en_corpus_train
-#DATA_DIR=/home/ec2-user/bert_data/hdf5_lower_case_1_seq_len_128_max_pred_20_masked_lm_prob_0.15_random_seed_12345_dupe_factor_10_shard_1536_nv/books_wiki_en_corpus_train
-#DATA_DIR=/home/ec2-user/bert_data_pytorch/bert_data_2048_wwm/phase1
-#DATA_DIR=/home/ec2-user/bert_data_pytorch/bert_data_2048/phase1/training
 BERT_CONFIG=bert_config.json
 RESULTS_DIR=./results
 CHECKPOINTS_DIR=./results/checkpoints
@@ -139,8 +133,6 @@ CMD+=" --do_train"
 
 
 CMD="python3 -m torch.distributed.launch --nproc_per_node=$num_gpus --nnodes=$NUM_NODES --node_rank=$NODE_RANK --master_addr=$MASTER_ADDR --master_port=$MASTER_PORT $CMD"
-#CMD="python3 -m torch.distributed.launch --nproc_per_node=$num_gpus --nnodes=$NUM_NODES --node_rank=$NODE_RANK --master_addr=$MASTER_ADDR --master_port=$MASTER_PORT --no_python --use_env bash -c 'exec numactl --physcpubind=0-5,48-53 --membind=0 "${@}"' -- $CMD"
-#CMD="python3 -m torch.distributed.launch --nproc_per_node=$num_gpus --nnodes=$NUM_NODES --node_rank=$NODE_RANK --master_addr=$MASTER_ADDR --master_port=$MASTER_PORT --no_python --use_env bash -c 'export OMPI_COMM_WORLD_LOCAL_RANK=$LOCAL_RANK && bash ompi_bind_DGX1.sh' -- $CMD"
 
 
 if [ "$create_logfile" = "true" ] ; then

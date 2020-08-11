@@ -20,8 +20,6 @@ export LD_LIBRARY_PATH=/usr/local/cuda/extras/CUPTI/lib64:$LD_LIBRARY_PATH
 # Specify dist training params
 NUM_NODES=192
 NODE_RANK=$1
-#MASTER_ADDR="172.31.39.57"
-#MASTER_ADDR="172.31.34.205"
 MASTER_ADDR="172.31.35.122"
 MASTER_PORT="1234"
 
@@ -46,9 +44,6 @@ allreduce_post_accumulation_fp16="true"
 accumulate_into_fp16="false"
 
 # Specify phase 1 data path
-#DATA_DIR=/fsx/datasets/hdf5_lower_case_1_seq_len_128_max_pred_20_masked_lm_prob_0.15_random_seed_12345_dupe_factor_5_shard_256/books_wiki_en_corpus_train/
-#DATA_DIR=/home/ec2-user/bert_data/hdf5_lower_case_1_seq_len_128_max_pred_20_masked_lm_prob_0.15_random_seed_12345_dupe_factor_10_shard_1536_nv/books_wiki_en_corpus_train
-#DATA_DIR=/home/ec2-user/bert_data_pytorch/bert_data_2048/phase1/training
 DATA_DIR=/home/ec2-user/bert_data/hdf5_lower_case_1_seq_len_128_max_pred_20_masked_lm_prob_0.15_random_seed_12345_dupe_factor_10_shard_1536_small/books_wiki_en_corpus_train
 BERT_CONFIG=./bert_config.json
 RESULTS_DIR=./results
@@ -56,13 +51,11 @@ CHECKPOINTS_DIR=./results/checkpoints
 
 # Specify phase 2 params
 train_batch_size_phase2=22
-#train_batch_size_phase2=192
 learning_rate_phase2="5e-3"
 warmup_proportion_phase2="0.192"
 const_proportion_phase2="0.108"
 train_steps_phase2=782
 gradient_accumulation_steps_phase2=2
-#gradient_accumulation_steps_phase2=16
 
 #mkdir -p $CHECKPOINTS_DIR
 
@@ -92,12 +85,7 @@ fi
 #Start Phase2
 
 # Specify phase 2 data path
-#DATA_DIR=/fsx/datasets/hdf5_lower_case_1_seq_len_512_max_pred_80_masked_lm_prob_0.15_random_seed_12345_dupe_factor_5_shard_256/books_wiki_en_corpus_train/
-#DATA_DIR=/fsx/datasets/hdf5_lower_case_1_seq_len_512_max_pred_80_masked_lm_prob_0.15_random_seed_12345_dupe_factor_5_shard_1536_small/books_wiki_en_corpus_train
 DATA_DIR=/home/ec2-user/bert_data/hdf5_lower_case_1_seq_len_512_max_pred_80_masked_lm_prob_0.15_random_seed_12345_dupe_factor_10_shard_1536_small/books_wiki_en_corpus_train
-#DATA_DIR=/home/ec2-user/bert_data/hdf5_lower_case_1_seq_len_512_max_pred_80_masked_lm_prob_0.15_random_seed_12345_dupe_factor_10_shard_1536_nv/books_wiki_en_corpus_train
-#DATA_DIR=/home/ec2-user/bert_data_pytorch/bert_data_2048/phase2/training
-#DATA_DIR=/home/ec2-user/bert_data_pytorch/bert_data_2048_wwm/phase2
 
 PREC=""
 if [ "$precision" = "fp16" ] ; then
